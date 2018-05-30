@@ -624,8 +624,8 @@ public final class Utils {
    * @return A map from property names to property descriptors for <b>c</b>.
    */
   private static Map<String, PropertyDescriptor> describeClass0(Class<?> c) {
-    Map<String, PropertyDescriptor> propertyDescriptors = new LinkedHashMap<String, PropertyDescriptor>();
-    Map<String, Method> getters = new LinkedHashMap<String, Method>();
+    Map<String, PropertyDescriptor> propertyDescriptors = new TreeMap<String, PropertyDescriptor>();
+    Map<String, Method> getters = new HashMap<String, Method>();
     Map<String, List<Method>> groupedSetters = new HashMap<String, List<Method>>();
 
     for (Method method : getPublicMethods(c)) {
