@@ -1,0 +1,14 @@
+apply plugin: 'java'
+
+group 'ardinsys'
+sourceCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile group: 'org.ow2.asm', name: 'asm', version: '6.1.1'
+}
