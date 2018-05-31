@@ -15,7 +15,7 @@ public final class MessageTemplates {
   public static final String ERROR_INSTANTIATE_INCOMPATIBLE_CLASSES = "Failed to instantiate type %s (no subclass compatible with type %s could be found).";
 
   /**
-   * <i>Failed to instantiate enum %s (it has no declared enum constants)./<i>
+   * <i>Failed to instantiate enum %s (it has no declared enum constants).</i>
    */
   public static final String ERROR_INSTANTIATE_EMPTY_ENUM = "Failed to instantiate enum %s (it has no declared enum constants).";
 

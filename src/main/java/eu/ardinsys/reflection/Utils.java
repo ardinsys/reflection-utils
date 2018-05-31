@@ -1,32 +1,13 @@
 package eu.ardinsys.reflection;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Public utility methods.
@@ -41,6 +22,13 @@ public final class Utils {
    * A set of classes representing boxed classes of primitive types.
    */
   private static final Set<Class<?>> BOXED_CLASSES = new HashSet<Class<?>>();
+  /**
+   * A set of classes representing immutable types.
+   */
+  private static final Set<Class<?>> IMMUTABLE_CLASSES = new HashSet<Class<?>>();
+  // Caches for memoized methods
+  private static final Map<Class<?>, Map<String, PropertyDescriptor>> CACHE_DESCRIPTION = new HashMap<Class<?>, Map<String, PropertyDescriptor>>();
+  private static final Map<TypeDistanceCacheKey, Integer> CACHE_TYPE_DISTANCE = new HashMap<TypeDistanceCacheKey, Integer>();
 
   static {
     BOXED_CLASSES.addAll(Arrays.asList(
@@ -54,11 +42,6 @@ public final class Utils {
         Boolean.class));
   }
 
-  /**
-   * A set of classes representing immutable types.
-   */
-  private static final Set<Class<?>> IMMUTABLE_CLASSES = new HashSet<Class<?>>();
-
   static {
     IMMUTABLE_CLASSES.addAll(BOXED_CLASSES);
     IMMUTABLE_CLASSES.addAll(Arrays.asList(
@@ -70,10 +53,6 @@ public final class Utils {
         Timestamp.class,
         XMLGregorianCalendar.class));
   }
-
-  // Caches for memoized methods
-  private static final Map<Class<?>, Map<String, PropertyDescriptor>> CACHE_DESCRIPTION = new HashMap<Class<?>, Map<String, PropertyDescriptor>>();
-  private static final Map<TypeDistanceCacheKey, Integer> CACHE_TYPE_DISTANCE = new HashMap<TypeDistanceCacheKey, Integer>();
 
   private Utils() {
     // private since we never actually instantiate this class (static members only)
@@ -293,6 +272,7 @@ public final class Utils {
    *
    * @param constructor The constructor
    * @param args        The arguments to <b>constructor</b>
+   * @param <T>         The type variable of the constructor
    * @return The instance created by <b>constructor</b>
    */
   public static <T> T invoke(Constructor<T> constructor, Object... args) {
@@ -466,7 +446,8 @@ public final class Utils {
   }
 
   /**
-   * @param c The class
+   * @param c   The class
+   * @param <T> The type variable of the class
    * @return The no-arg constructor of <code>c</code> or <code>null</code> (if none exists)
    */
   @SuppressWarnings("unchecked")
@@ -574,6 +555,7 @@ public final class Utils {
    *
    * @param c      The class
    * @param object The object
+   * @param <T>    The type variable of the class
    * @return <b>object</b> cast to <b>c</b>
    */
   @SuppressWarnings("unchecked")
@@ -584,7 +566,8 @@ public final class Utils {
   /**
    * Attempts to instantiate the given class.
    *
-   * @param c The class
+   * @param c   The class
+   * @param <T> The type variable of the class
    * @return A new instance of <b>c</b>
    */
   public static <T> T instantiate(Class<T> c) {

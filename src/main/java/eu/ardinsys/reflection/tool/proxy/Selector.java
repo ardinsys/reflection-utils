@@ -17,49 +17,52 @@ package eu.ardinsys.reflection.tool.proxy;
  * </ul>
  */
 public class Selector {
-	/** The type of the selector. */
-	private final SelectorType type;
+  /**
+   * The type of the selector.
+   */
+  private final SelectorType type;
 
-	/** The value of the selector. */
-	private final String value;
+  /**
+   * The value of the selector.
+   */
+  private final String value;
 
-	public Selector(String value, SelectorType type) {
-		this.value = value;
-		this.type = type;
-	}
+  public Selector(String value, SelectorType type) {
+    this.value = value;
+    this.type = type;
+  }
 
-	/**
-	 * @return The current value of {@link #type}
-	 */
-	public SelectorType getType() {
-		return type;
-	}
+  /**
+   * @return The current value of {@link #type}
+   */
+  public SelectorType getType() {
+    return type;
+  }
 
-	/**
-	 * @return The current value of {@link #value}
-	 */
-	public String getValue() {
-		return value;
-	}
+  /**
+   * @return The current value of {@link #value}
+   */
+  public String getValue() {
+    return value;
+  }
 
-	/**
-	 * @return The numeric value of {@link #value}
-	 * @throws NumberFormatException
-	 *           If the value isn't numeric
-	 */
-	public int getNumericValue() throws NumberFormatException {
-		return Integer.parseInt(value);
-	}
+  /**
+   * @return The numeric value of {@link #value}
+   * @throws NumberFormatException If the value isn't numeric
+   */
+  public int getNumericValue() throws NumberFormatException {
+    return Integer.parseInt(value);
+  }
 
-	@Override
-	public String toString() {
-		return String.format("[%s %s]", type, value);
-	}
+  @Override
+  public String toString() {
+    return String.format("[%s %s]", type, value);
+  }
 
-	/**
-	 * The type of the selector.
-	 */
-	public enum SelectorType {
-		PROPERTY, INDEX, KEY, LAST_INDEX, APPEND_INDEX
-	}
+  /**
+   * The type of the selector.
+   */
+  public enum SelectorType {
+    PROPERTY, INDEX, KEY, LAST_INDEX, APPEND_INDEX
+  }
 }

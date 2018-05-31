@@ -9,12 +9,11 @@ import java.util.Set;
  * See {@link #provideImplementations(Class)}.
  */
 public interface ImplementationProvider {
-	/**
-	 * Returns a list of implementations for a superclass.
-	 * 
-	 * @param superClass
-	 *          The superclass
-	 * @return A list of implementations
-	 */
-	Set<Class<?>> provideImplementations(Class<?> superClass);
+  /**
+   * Returns a list of implementations for a superclass.
+   *
+   * @param superClass The superclass
+   * @return A list of implementations
+   */
+  Set<Class<?>> provideImplementations(Class<?> superClass);
 }

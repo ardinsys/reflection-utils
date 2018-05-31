@@ -1,10 +1,10 @@
 package eu.ardinsys.reflection;
 
-import java.lang.reflect.Method;
-
 import eu.ardinsys.reflection.tool.cloner.ReflectionCloner;
 import eu.ardinsys.reflection.tool.dumper.ReflectionDumper;
 import eu.ardinsys.reflection.tool.initializer.ReflectionInitializer;
+
+import java.lang.reflect.Method;
 
 /**
  * An interface to determine which properties to exclude (from whatever operation). By default, a property is included
@@ -26,8 +26,8 @@ import eu.ardinsys.reflection.tool.initializer.ReflectionInitializer;
  * <p>
  * A property of class <b>A</b> is excluded if any of the <i>relevant</i> property filters exclude it (via
  * {@link #excludeProperty(String)}). A property filter registered for class <b>B</b> is <i>relevant</i> for class
- * <b>A</b> if <b>A</b> <= <b>B</b> and no property filter registered for a class <b>C</b> exists such that <b>A</b> <=
- * <b>C</b> < <b>B</b>, where <b>X</b> <(=) <b>Y</b> means "<b>X</b> is a subclass of <b>Y</b> (or <b>X</b> is
+ * <b>A</b> if <b>A</b> &lt;= <b>B</b> and no property filter registered for a class <b>C</b> exists such that <b>A</b> &lt;=
+ * <b>C</b> &lt; <b>B</b>, where <b>X</b> &lt;(=) <b>Y</b> means "<b>X</b> is a subclass of <b>Y</b> (or <b>X</b> is
  * <b>Y</b>)".<br>
  * In short, this means that a property filter may "override" the decision of another if it was registered to a more
  * direct class.

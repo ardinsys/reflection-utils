@@ -1,15 +1,15 @@
 package eu.ardinsys.reflection.tool;
 
+import eu.ardinsys.reflection.ClassHashMap;
+import eu.ardinsys.reflection.MessageTemplates;
+import eu.ardinsys.reflection.PropertyFilter;
+import eu.ardinsys.reflection.Utils;
+
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import eu.ardinsys.reflection.ClassHashMap;
-import eu.ardinsys.reflection.MessageTemplates;
-import eu.ardinsys.reflection.PropertyFilter;
-import eu.ardinsys.reflection.Utils;
 
 /**
  * Common base for all reflection related utils. Public API:
@@ -29,249 +29,234 @@ import eu.ardinsys.reflection.Utils;
  * </ul>
  */
 public abstract class ReflectionBase {
-	/**
-	 * The instance provider.<br>
-	 * Default value: an instance of {@link BasicInstanceProvider}.
-	 */
-	protected InstanceProvider instanceProvider = new BasicInstanceProvider();
+  /**
+   * The property filters.
+   */
+  protected final ClassHashMap<PropertyFilter> propertyFilters = new ClassHashMap<PropertyFilter>();
+  /**
+   * The user registered immutable classes.
+   */
+  protected final Set<Class<?>> registeredImmutableClasses = new HashSet<Class<?>>();
+  /**
+   * The instance provider.<br>
+   * Default value: an instance of {@link BasicInstanceProvider}.
+   */
+  protected InstanceProvider instanceProvider = new BasicInstanceProvider();
+  /**
+   * The implementation provider.<br>
+   * Default value: an instance of {@link BasicImplementationProvider}.
+   */
+  protected ImplementationProvider implementationProvider = new BasicImplementationProvider();
+  /**
+   * The logger to report infos and error messages.<br>
+   * Defaults value: the global java logger (<code>Logger.getLogger(Logger.GLOBAL_LOGGER_NAME)</code>).
+   */
+  protected Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
-	/**
-	 * The implementation provider.<br>
-	 * Default value: an instance of {@link BasicImplementationProvider}.
-	 */
-	protected ImplementationProvider implementationProvider = new BasicImplementationProvider();
+  /**
+   * If true, the process will throw an exception on error.<br>
+   * Default value: <code>false</code>.
+   */
+  protected boolean throwOnError = false;
 
-	/**
-	 * The property filters.
-	 */
-	protected final ClassHashMap<PropertyFilter> propertyFilters = new ClassHashMap<PropertyFilter>();
+  /**
+   * @return The current value of {@link #instanceProvider}
+   */
+  public InstanceProvider getInstanceProvider() {
+    return instanceProvider;
+  }
 
-	/**
-	 * The user registered immutable classes.
-	 */
-	protected final Set<Class<?>> registeredImmutableClasses = new HashSet<Class<?>>();
+  /**
+   * @param instanceProvider The new value of {@link #instanceProvider}
+   */
+  public void setInstanceProvider(InstanceProvider instanceProvider) {
+    this.instanceProvider = instanceProvider;
+  }
 
-	/**
-	 * The logger to report infos and error messages.<br>
-	 * Defaults value: the global java logger (<code>Logger.getLogger(Logger.GLOBAL_LOGGER_NAME)</code>).
-	 */
-	protected Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+  /**
+   * @return The current value of {@link #implementationProvider}
+   */
+  public final ImplementationProvider getImplementationProvider() {
+    return implementationProvider;
+  }
 
-	/**
-	 * If true, the process will throw an exception on error.<br>
-	 * Default value: <code>false</code>.
-	 */
-	protected boolean throwOnError = false;
+  /**
+   * @param provider The new value of {@link #implementationProvider}
+   */
+  public final void setImplementationProvider(ImplementationProvider provider) {
+    this.implementationProvider = provider;
+  }
 
-	/**
-	 * @return The current value of {@link #instanceProvider}
-	 */
-	public InstanceProvider getInstanceProvider() {
-		return instanceProvider;
-	}
+  /**
+   * Returns the property filter registered for the given class.
+   *
+   * @param c The class
+   * @return The property filter
+   */
+  public final PropertyFilter getPropertyFilter(Class<?> c) {
+    return propertyFilters.get(c);
+  }
 
-	/**
-	 * @param instanceProvider
-	 *          The new value of {@link #instanceProvider}
-	 */
-	public void setInstanceProvider(InstanceProvider instanceProvider) {
-		this.instanceProvider = instanceProvider;
-	}
+  /**
+   * Registers a property filter for the given class.
+   *
+   * @param c              The class
+   * @param propertyFilter The property filter
+   */
+  public final void addPropertyFilter(Class<?> c, PropertyFilter propertyFilter) {
+    propertyFilters.put(c, propertyFilter);
+  }
 
-	/**
-	 * @return The current value of {@link #implementationProvider}
-	 */
-	public final ImplementationProvider getImplementationProvider() {
-		return implementationProvider;
-	}
+  /**
+   * Unregisters a property filter registered to the given class.
+   *
+   * @param c The class
+   */
+  public final void removePropetyFilter(Class<?> c) {
+    propertyFilters.remove(c);
+  }
 
-	/**
-	 * @param provider
-	 *          The new value of {@link #implementationProvider}
-	 */
-	public final void setImplementationProvider(ImplementationProvider provider) {
-		this.implementationProvider = provider;
-	}
+  /**
+   * @param c The class
+   * @return True if <b>c</b> is registered as immutable
+   */
+  public final boolean isRegisteredImmutable(Class<?> c) {
+    return registeredImmutableClasses.contains(c);
+  }
 
-	/**
-	 * Returns the property filter registered for the given class.
-	 *
-	 * @param c
-	 *          The class
-	 * @return The property filter
-	 */
-	public final PropertyFilter getPropertyFilter(Class<?> c) {
-		return propertyFilters.get(c);
-	}
+  /**
+   * Registers the class as immutable
+   *
+   * @param c The class
+   */
+  public final void registerImmutable(Class<?> c) {
+    registeredImmutableClasses.add(c);
+  }
 
-	/**
-	 * Registers a property filter for the given class.
-	 *
-	 * @param c
-	 *          The class
-	 * @param propertyFilter
-	 *          The property filter
-	 */
-	public final void addPropertyFilter(Class<?> c, PropertyFilter propertyFilter) {
-		propertyFilters.put(c, propertyFilter);
-	}
+  /**
+   * Unregisters the class previously registered as immutable.
+   *
+   * @param c The class
+   */
+  public final void unregisterImmutable(Class<?> c) {
+    registeredImmutableClasses.remove(c);
+  }
 
-	/**
-	 * Unregisters a property filter registered to the given class.
-	 *
-	 * @param c
-	 *          The class
-	 */
-	public final void removePropetyFilter(Class<?> c) {
-		propertyFilters.remove(c);
-	}
+  /**
+   * @return The current value of {@link #logger}
+   */
+  public final Logger getLogger() {
+    return logger;
+  }
 
-	/**
-	 * @param c
-	 *          The class
-	 * @return True if <b>c</b> is registered as immutable
-	 */
-	public final boolean isRegisteredImmutable(Class<?> c) {
-		return registeredImmutableClasses.contains(c);
-	}
+  /**
+   * @param logger The new value of {@link #logger}
+   */
+  public final void setLogger(Logger logger) {
+    this.logger = logger;
+  }
 
-	/**
-	 * Registers the class as immutable
-	 *
-	 * @param c
-	 *          The class
-	 */
-	public final void registerImmutable(Class<?> c) {
-		registeredImmutableClasses.add(c);
-	}
+  /**
+   * @return The current value of {@link #throwOnError}
+   */
+  public final boolean getThrowOnError() {
+    return throwOnError;
+  }
 
-	/**
-	 * Unregisters the class previously registered as immutable.
-	 *
-	 * @param c
-	 *          The class
-	 */
-	public final void unregisterImmutable(Class<?> c) {
-		registeredImmutableClasses.remove(c);
-	}
+  /**
+   * @param throwOnError The new value of {@link #throwOnError}
+   */
+  public final void setThrowOnError(boolean throwOnError) {
+    this.throwOnError = throwOnError;
+  }
 
-	/**
-	 * @return The current value of {@link #logger}
-	 */
-	public final Logger getLogger() {
-		return logger;
-	}
+  // ///////////////////////////////////////////////////////////
+  //
+  // Delegated operations
+  //
+  // ///////////////////////////////////////////////////////////
 
-	/**
-	 * @param logger
-	 *          The new value of {@link #logger}
-	 */
-	public final void setLogger(Logger logger) {
-		this.logger = logger;
-	}
+  /**
+   * @return The size.
+   * @see InstanceProvider#getCompositeSize()
+   */
+  public final int getCompositeSize() {
+    return instanceProvider.getCompositeSize();
+  }
 
-	/**
-	 * @return The current value of {@link #throwOnError}
-	 */
-	public final boolean getThrowOnError() {
-		return throwOnError;
-	}
+  /**
+   * @param compositeSize The size.
+   * @see InstanceProvider#setCompositeSize(int)
+   */
+  public final void setCompositeSize(int compositeSize) {
+    instanceProvider.setCompositeSize(compositeSize);
+  }
 
-	/**
-	 * @param throwOnError
-	 *          The new value of {@link #throwOnError}
-	 */
-	public final void setThrowOnError(boolean throwOnError) {
-		this.throwOnError = throwOnError;
-	}
+  // ///////////////////////////////////////////////////////////
+  //
+  // Common operations
+  //
+  // ///////////////////////////////////////////////////////////
 
-	// ///////////////////////////////////////////////////////////
-	//
-	// Delegated operations
-	//
-	// ///////////////////////////////////////////////////////////
+  private String getToolName() {
+    return getClass().getSimpleName();
+  }
 
-	/**
-	 * @return The size.
-	 * @see InstanceProvider#getCompositeSize()
-	 */
-	public final int getCompositeSize() {
-		return instanceProvider.getCompositeSize();
-	}
+  private Class<?> getInstantiableClass(Class<?> rawClass) {
+    if (Utils.isConcrete(rawClass)) {
+      return rawClass;
+    }
 
-	/**
-	 * @param compositeSize The size.
-	 * @see InstanceProvider#setCompositeSize(int)
-	 */
-	public final void setCompositeSize(int compositeSize) {
-		instanceProvider.setCompositeSize(compositeSize);
-	}
+    for (Class<?> implementation : implementationProvider.provideImplementations(rawClass)) {
+      if (Utils.isConcrete(implementation)) {
+        return implementation;
+      }
+    }
 
-	// ///////////////////////////////////////////////////////////
-	//
-	// Common operations
-	//
-	// ///////////////////////////////////////////////////////////
+    throw new RuntimeException(
+        String.format(MessageTemplates.ERROR_INSTANTIATE_ABSTRACT_CLASS, rawClass.getName()));
+  }
 
-	private String getToolName() {
-		return getClass().getSimpleName();
-	}
+  private <T> T instantiateClass(Class<T> instantiableClass) {
+    return Utils.cast(instantiableClass, instanceProvider.provideInstance(instantiableClass));
+  }
 
-	private Class<?> getInstantiableClass(Class<?> rawClass) {
-		if (Utils.isConcrete(rawClass)) {
-			return rawClass;
-		}
+  private <T> T instantiateRawClass(Class<T> rawClass) {
+    return Utils.cast(rawClass, instantiateClass(getInstantiableClass(rawClass)));
+  }
 
-		for (Class<?> implementation : implementationProvider.provideImplementations(rawClass)) {
-			if (Utils.isConcrete(implementation)) {
-				return implementation;
-			}
-		}
+  protected final Object instantiateType(Type type) {
+    return instantiateRawClass(Utils.getRawClass(type));
+  }
 
-		throw new RuntimeException(
-				String.format(MessageTemplates.ERROR_INSTANTIATE_ABSTRACT_CLASS, rawClass.getName()));
-	}
+  protected final <T> T instantiateForAbstraction(Class<T> abstraction, Class<?> sourceClass,
+                                                  Type targetType) {
+    Class<?> targetRawClass = Utils.getRawClass(targetType);
 
-	private <T> T instantiateClass(Class<T> instantiableClass) {
-		return Utils.cast(instantiableClass, instanceProvider.provideInstance(instantiableClass));
-	}
+    if (abstraction.isAssignableFrom(targetRawClass)) {
+      return targetRawClass.isAssignableFrom(sourceClass)
+          ? Utils.cast(abstraction, instantiateRawClass(sourceClass))
+          : Utils.cast(abstraction, instantiateRawClass(targetRawClass));
+    }
 
-	private <T> T instantiateRawClass(Class<T> rawClass) {
-		return Utils.cast(rawClass, instantiateClass(getInstantiableClass(rawClass)));
-	}
+    if (targetRawClass.isAssignableFrom(abstraction)) {
+      return Utils.cast(abstraction, instantiateRawClass(sourceClass));
+    }
 
-	protected final Object instantiateType(Type type) {
-		return instantiateRawClass(Utils.getRawClass(type));
-	}
+    throw new RuntimeException(
+        String.format(MessageTemplates.ERROR_INSTANTIATE_INCOMPATIBLE_CLASSES,
+            Utils.formatTypeName(targetType), sourceClass.getName()));
+  }
 
-	protected final <T> T instantiateForAbstraction(Class<T> abstraction, Class<?> sourceClass,
-			Type targetType) {
-		Class<?> targetRawClass = Utils.getRawClass(targetType);
+  protected final void log(Level level, String message) {
+    logger.log(level, String.format("%s: %s", getToolName(), message));
+  }
 
-		if (abstraction.isAssignableFrom(targetRawClass)) {
-			return targetRawClass.isAssignableFrom(sourceClass)
-					? Utils.cast(abstraction, instantiateRawClass(sourceClass))
-					: Utils.cast(abstraction, instantiateRawClass(targetRawClass));
-		}
+  protected final void log(Level level, String message, Exception e) {
+    logger.log(level, String.format("%s: %s", getToolName(), message), e);
+  }
 
-		if (targetRawClass.isAssignableFrom(abstraction)) {
-			return Utils.cast(abstraction, instantiateRawClass(sourceClass));
-		}
-
-		throw new RuntimeException(
-				String.format(MessageTemplates.ERROR_INSTANTIATE_INCOMPATIBLE_CLASSES,
-						Utils.formatTypeName(targetType), sourceClass.getName()));
-	}
-
-	protected final void log(Level level, String message) {
-		logger.log(level, String.format("%s: %s", getToolName(), message));
-	}
-
-	protected final void log(Level level, String message, Exception e) {
-		logger.log(level, String.format("%s: %s", getToolName(), message), e);
-	}
-
-	protected boolean isImmutable(Class<?> c) {
-		return Utils.isImmutable(c) || registeredImmutableClasses.contains(c);
-	}
+  protected boolean isImmutable(Class<?> c) {
+    return Utils.isImmutable(c) || registeredImmutableClasses.contains(c);
+  }
 }
