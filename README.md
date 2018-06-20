@@ -36,7 +36,7 @@ public class Bar2 {
 ```
 
 ```java
-ReflectionCloner = new ReflectionCloner();
+ReflectionCloner cloner = new ReflectionCloner();
 
 Bar1 bar = new Bar1();
 bar.setA(100);
