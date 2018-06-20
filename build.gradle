@@ -45,8 +45,8 @@ uploadArchives {
 
             repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
                 authentication(
-                        project.hasProperty('sonatypeUsername') ? project.sonatypeUsername : System.getenv('sonatypeUsername'),
-                        project.hasProperty('sonatypePassword') ? project.sonatypePassword : System.getenv('sonatypePassword')
+                        userName: project.hasProperty('sonatypeUsername') ? project.sonatypeUsername : System.getenv('sonatypeUsername'),
+                        password: project.hasProperty('sonatypePassword') ? project.sonatypePassword : System.getenv('sonatypePassword')
                 )
             }
 
